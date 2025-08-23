@@ -1,0 +1,19 @@
+{
+  "name": "kuyobackend",
+  "version": "1.0.0",
+  "description": "Backend du projet KUYO pour l'import de PDF et de données scrappées dans Weaviate",
+  "type": "module",
+  "main": "weaviate/importPdf.js",
+  "scripts": {
+    "start": "node weaviate/importPdf.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12",
+    "pdf-parse": "^1.1.1",
+    "weaviate-ts-client": "^1.6.0"
+  },
+  "keywords": [],
+  "author": "Dossawa KONE",
+  "license": "ISC"
+}

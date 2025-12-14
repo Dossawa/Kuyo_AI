@@ -1,12 +1,17 @@
 {
-  "framework": "vite",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs20.x"
+  "builds": [
+    {
+      "src": "kuyofrontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "kuyofrontend/dist"
+      }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
-  },
-  "buildCommand": "cd kuyofrontend && npm install && npm run build",
-  "outputDirectory": "kuyofrontend/dist",
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
@@ -14,7 +19,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/kuyofrontend/dist/$1"
     }
   ]
 }

@@ -1,4 +1,4 @@
-// api/geminiService.js
+// kuyofrontend/src/services/api/geminiService.js
 import { BaseService } from "./baseService";
 
 /* =====================================================
@@ -11,7 +11,7 @@ RÈGLES
 1) Ne répondre que pour la Côte d’Ivoire et ses démarches/services publics.
 2) Hors contexte (question non administrative ivoirienne) :
    répondre UNIQUEMENT par une phrase + 3–5 suggestions de sujets administratifs ivoiriens.
-3) Utiliser STRICTEMENT les extraits fournis. 
+3) Utiliser STRICTEMENT les extraits fournis.
    Si aucun extrait n’est fourni, donner une réponse générique basée sur les démarches usuelles en Côte d’Ivoire
    (et préciser que les procédures peuvent évoluer).
 4) Toujours préciser que les procédures peuvent évoluer quand c’est pertinent.
@@ -44,14 +44,21 @@ const bulletList = (arr) =>
 ===================================================== */
 function stringifyChunk(c = {}) {
   const lines = [];
+
   if (c.title) lines.push(`# ${c.title}`);
   if (c.description) lines.push(clean(c.description));
-  if (Array.isArray(c.documents) && c.documents.length)
+
+  if (Array.isArray(c.documents) && c.documents.length) {
     lines.push(`Documents:\n${bulletList(c.documents)}`);
-  if (Array.isArray(c.etapes) && c.etapes.length)
+  }
+
+  if (Array.isArray(c.etapes) && c.etapes.length) {
     lines.push(`Étapes:\n${bulletList(c.etapes)}`);
-  if (Array.isArray(c.casParticuliers) && c.casParticuliers.length)
+  }
+
+  if (Array.isArray(c.casParticuliers) && c.casParticuliers.length) {
     lines.push(`Cas particuliers:\n${bulletList(c.casParticuliers)}`);
+  }
 
   const meta = [
     c.frais ? `Frais: ${clean(c.frais)}` : "",
@@ -63,6 +70,7 @@ function stringifyChunk(c = {}) {
     .join("\n");
 
   if (meta) lines.push(meta);
+
   return lines.filter(Boolean).join("\n\n").trim();
 }
 
@@ -102,7 +110,7 @@ Question : "${userText}"`;
 
     if (ctx) {
       parts.unshift({
-        text: "Contexte strict :\n\n" + ctx + "\n\n---\n\n",
+        text: `Contexte strict :\n\n${ctx}\n\n---\n\n`,
       });
     }
   }
@@ -135,7 +143,7 @@ function postFormatMarkdown(s) {
 }
 
 /* =====================================================
-   SERVICE GEMINI (APPEL BACKEND)
+   SERVICE GEMINI (APPEL API ROUTE VERCEL)
 ===================================================== */
 export const GeminiService = {
   async generateContent({ userText, contextChunks = [], mode = "normal" }) {
@@ -151,7 +159,7 @@ export const GeminiService = {
         },
       };
 
-      // 🔥 APPEL UNIQUEMENT AU BACKEND KUYO
+      // ✅ Appel UNIQUEMENT à l’API Route Vercel
       const data = await BaseService.request("/api/gemini", {
         method: "POST",
         headers: {
@@ -160,8 +168,13 @@ export const GeminiService = {
         body: JSON.stringify(body),
       });
 
-      const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      return raw ? postFormatMarkdown(raw) : "⚠️ Pas de réponse de KUYO.";
+      const raw =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+      return raw
+        ? postFormatMarkdown(raw)
+        : "⚠️ Pas de réponse de KUYO.";
+
     } catch (error) {
       console.error("Erreur Gemini frontend:", error);
       return "⚠️ Erreur lors de l'appel à KUYO.";
